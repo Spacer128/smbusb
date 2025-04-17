@@ -1,6 +1,6 @@
 /*
-* smbusb_bq8030flasher
-* Flasher tool for the BQ8030 series chips
+* smbusb_bq8050flasher
+* Flasher tool for the BQ8050/BQ8055 series chips
 *
 * Copyright (c) 2016 Viktor <github@karosium.e4ward.com>
 *
@@ -105,7 +105,7 @@ int writeEepromBlock(unsigned char blockNr, unsigned char* buf) {
 
         status = SMBWriteBlock(0x16,CMD_WRITE_EEPROM_BLOCK,block,33);
 	usleep(2000);	
-	return status-1;
+	return status;
 }
 
 
@@ -113,7 +113,7 @@ int readEepromBlock(unsigned char blockNr, unsigned char* buf) {
 	int status,i;
 
 	status=SMBWriteWord(0x16,CMD_SET_EEPROM_ADDRESS,EEPROM_BASE_ADDR+(blockNr*32)); 
-	if (status <0) return status;
+	if (status <0) return -1;
 	
 	status=SMBReadBlock(0x16,CMD_READ_EEPROM_BLOCK,buf);
 	
@@ -124,7 +124,7 @@ int readEepromBlock(unsigned char blockNr, unsigned char* buf) {
 void printHeader() {
 
 	  printf("------------------------------------\n");
-	  printf("        smbusb_bq8030flasher\n");
+	  printf("        smbusb_bq8050flasher\n");
  	  printf("------------------------------------\n");
 }
 void printUsage() {
@@ -413,7 +413,7 @@ int main(int argc, char **argv)
 		for (i=0;i<EEPROM_BLOCK_COUNT;i++) {
 			fread(block,EEPROM_BLOCKSZ,1,inFile);
 			status=writeEepromBlock(i,block);
-			if (status != EEPROM_BLOCKSZ) {
+			if (status < 0) {
 				printf("Error:%d\n",status);
 				exit(2);
 			}
