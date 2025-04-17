@@ -379,8 +379,8 @@ static int smbus_read_block_data_relax(int fd, uint8_t address, uint8_t command,
         return -1;
     }
 
-    //msg[1].len = buffer[0] + (s_ctx.pec_enabled ? 1 : 0);
-    msg[1].len = buffer[0];
+    msg[1].len = buffer[0] + (s_ctx.pec_enabled ? 1 : 0);
+    //msg[1].len = buffer[0];
     sts = xioctl(fd, I2C_RDWR, &req);
     if (sts < 0) {
         fprintf(stderr, "smbus_read_block_data_relax: error %d\n", errno);
